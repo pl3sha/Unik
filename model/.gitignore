@@ -1,0 +1,8 @@
+venv/
+*.png
+*.log
+*.out
+*.toc
+*.aux
+*.todo
+*.pdf

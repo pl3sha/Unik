@@ -1,0 +1,8 @@
+2lab/__pycache__
+2lab/results
+4lab/data
+4lab/plots
+
+*.txt
+*.pdf
+*.png

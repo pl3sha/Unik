@@ -1,0 +1,5 @@
+dictionary.sublime-workspace
+obj/
+bin/
+.Makefile.swo
+.Makefile.swp

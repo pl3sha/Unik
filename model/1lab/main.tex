@@ -1,0 +1,534 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[russian]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{tocloft}
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Настройка моноширинного шрифта с поддержкой кириллицы
+\setmonofont{DejaVu Sans Mono}[
+  Scale=0.85,
+  Script=Cyrillic
+]
+
+% Настройка стиля листинга Python
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!50!black}\itshape,
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    rulecolor=\color{black},
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=true,
+    linewidth=\textwidth,
+    xleftmargin=10pt,
+    xrightmargin=10pt,
+    extendedchars=true,
+}
+
+\setmainfont{Linux Libertine O}[
+  Script=Cyrillic,
+  Ligatures=TeX
+]
+\geometry{top=2cm, bottom=2cm, left=2cm, right=2cm}
+
+\date{\today}
+
+\begin{document}
+
+% Титульная страница
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1cm}
+    
+    {\large\textbf{ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ}}\\[5pt]
+    {\large\textbf{«СИБИРСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ}}\\
+    {\large\textbf{ТЕЛЕКОММУНИКАЦИЙ И ИНФОРМАТИКИ»}}\\[2.5cm]
+    
+    {\Large\textbf{ОТЧЕТ}}\\[1cm]
+    {\Large по дисциплине: «Моделирование»}\\[2cm]
+    
+    {\Large\textbf{Разработка генератора случайных чисел\\для заданной функции плотности вероятности}}\\[1cm]
+    {\Large\textbf{Вариант №3}}\\[5cm]
+    
+    \vspace{-2cm}
+    
+    \begin{flushright}
+        \large
+        \textbf{Выполнил:}\\
+        Студент группы ИВ-221\\
+        Плешков Михаил Витальевич\\[1cm]
+        \textbf{Проверил:}\\
+        Ассистент\\
+        Уженцева Анастасия Владимировна\\[1cm]
+        
+    \end{flushright}
+    
+    \vfill
+    
+    {\large Новосибирск, 2026 г.}
+\end{titlepage}
+
+% Оглавление
+\tableofcontents
+\newpage
+
+\section{Исходные данные}
+
+Дана функция плотности вероятности:
+\begin{equation}
+f(x) = \begin{cases} 
+\displaystyle \frac{1}{2}\cos\left(x+\frac{\pi}{6}\right), & x \in \left(-\frac{\pi}{6}, \frac{\pi}{6}\right) \\[15pt]
+k e^{-(x-\pi/6)}, & x \in \left(\frac{\pi}{6}, \pi\right)
+\end{cases}
+\end{equation}
+
+\section{Нахождение константы $k$}
+
+\subsection*{Условие нормировки}
+
+Для функции плотности вероятности должно выполняться:
+\begin{equation}
+\int_{-\infty}^{+\infty} f(x)\,dx = 1
+\end{equation}
+
+Учитывая, что $f(x) = 0$ вне интервала $\left(-\frac{\pi}{6}, \pi\right)$:
+\begin{equation}
+\int_{-\pi/6}^{\pi/6} \frac{1}{2}\cos\left(x+\frac{\pi}{6}\right)dx + \int_{\pi/6}^{\pi} ke^{-(x-\pi/6)}dx = 1
+\end{equation}
+
+\subsection*{Вычисление первого интеграла}
+
+Обозначим $I_1 = \displaystyle\int_{-\pi/6}^{\pi/6} \frac{1}{2}\cos\left(x+\frac{\pi}{6}\right)dx$
+
+Используем замену $u = x + \frac{\pi}{6}$, тогда $du = dx$.
+
+Пределы интегрирования:
+\begin{itemize}
+    \item При $x = -\frac{\pi}{6}$: $u = -\frac{\pi}{6} + \frac{\pi}{6} = 0$
+    \item При $x = \frac{\pi}{6}$: $u = \frac{\pi}{6} + \frac{\pi}{6} = \frac{\pi}{3}$
+\end{itemize}
+
+\begin{equation}
+I_1 = \frac{1}{2}\int_{0}^{\pi/3} \cos(u)\,du = \frac{1}{2}\sin(u)\Big|_{0}^{\pi/3} = \frac{1}{2}\left[\sin\frac{\pi}{3} - \sin 0\right]
+\end{equation}
+
+\begin{equation}
+\sin\frac{\pi}{3} = \frac{\sqrt{3}}{2}, \quad \sin 0 = 0
+\end{equation}
+
+\begin{equation}
+I_1 = \frac{1}{2} \cdot \frac{\sqrt{3}}{2} = \frac{\sqrt{3}}{4} \approx 0.433013
+\end{equation}
+
+\subsection*{Вычисление второго интеграла}
+
+Обозначим $I_2 = \displaystyle\int_{\pi/6}^{\pi} ke^{-(x-\pi/6)}dx$
+
+Используем замену $v = x - \frac{\pi}{6}$, тогда $dv = dx$.
+
+Пределы интегрирования:
+\begin{itemize}
+    \item При $x = \frac{\pi}{6}$: $v = \frac{\pi}{6} - \frac{\pi}{6} = 0$
+    \item При $x = \pi$: $v = \pi - \frac{\pi}{6} = \frac{5\pi}{6}$
+\end{itemize}
+
+\begin{equation}
+I_2 = k\int_{0}^{5\pi/6} e^{-v}\,dv = k\left[-e^{-v}\right]_{0}^{5\pi/6} = k\left[-e^{-5\pi/6} - (-e^{0})\right]
+\end{equation}
+
+\begin{equation}
+I_2 = k\left(1 - e^{-5\pi/6}\right), \quad \text{где } e^{-5\pi/6} \approx 0.072949
+\end{equation}
+
+\subsection*{Решение уравнения относительно $k$}
+
+Подставляем $I_1$ и $I_2$ в условие нормировки:
+\begin{equation}
+\frac{\sqrt{3}}{4} + k\left(1 - e^{-5\pi/6}\right) = 1
+\end{equation}
+
+Выражаем $k$:
+\begin{equation}
+k\left(1 - e^{-5\pi/6}\right) = 1 - \frac{\sqrt{3}}{4} = \frac{4-\sqrt{3}}{4}
+\end{equation}
+
+\begin{equation}
+k = \frac{4-\sqrt{3}}{4\left(1 - e^{-5\pi/6}\right)} \approx 0.611603
+\end{equation}
+
+\subsection*{Проверка значения $k$}
+
+Проверим, что $k > 0$:
+\begin{itemize}
+    \item $4 - \sqrt{3} \approx 4 - 1.732 = 2.268 > 0$
+    \item $1 - e^{-5\pi/6} \approx 1 - 0.073 = 0.927 > 0$
+\end{itemize}
+
+Следовательно, $k > 0$
+
+\section{Построение функции распределения $F(x)$}
+
+\subsection*{Определение}
+
+\begin{equation}
+F(x) = \int_{-\infty}^{x} f(t)\,dt
+\end{equation}
+
+\subsection*{Случай 1: $x \leq -\frac{\pi}{6}$}
+
+\begin{equation}
+F(x) = \int_{-\infty}^{x} 0\,dt = 0
+\end{equation}
+
+\subsection*{Случай 2: $-\frac{\pi}{6} < x \leq \frac{\pi}{6}$}
+
+\begin{equation}
+F(x) = \int_{-\pi/6}^{x} \frac{1}{2}\cos\left(t+\frac{\pi}{6}\right)dt = \frac{1}{2}\sin\left(t+\frac{\pi}{6}\right)\Big|_{-\pi/6}^{x}
+\end{equation}
+
+\begin{equation}
+F(x) = \frac{1}{2}\left[\sin\left(x+\frac{\pi}{6}\right) - \sin(0)\right] = \frac{1}{2}\sin\left(x+\frac{\pi}{6}\right)
+\end{equation}
+
+\textbf{Проверка в точке $x = \frac{\pi}{6}$:}
+\begin{equation}
+F\left(\frac{\pi}{6}\right) = \frac{1}{2}\sin\left(\frac{\pi}{6}+\frac{\pi}{6}\right) = \frac{1}{2}\sin\frac{\pi}{3} = \frac{1}{2} \cdot \frac{\sqrt{3}}{2} = \frac{\sqrt{3}}{4} \approx 0.433013
+\end{equation}
+
+\subsection*{Случай 3: $\frac{\pi}{6} < x < \pi$}
+
+\begin{equation}
+F(x) = F\left(\frac{\pi}{6}\right) + \int_{\pi/6}^{x} ke^{-(t-\pi/6)}dt = \frac{\sqrt{3}}{4} + k\left[-e^{-(t-\pi/6)}\right]_{\pi/6}^{x}
+\end{equation}
+
+\begin{equation}
+F(x) = \frac{\sqrt{3}}{4} + k\left[-e^{-(x-\pi/6)} - (-e^{0})\right] = \frac{\sqrt{3}}{4} + k\left(1 - e^{-(x-\pi/6)}\right)
+\end{equation}
+
+\textbf{Проверка непрерывности в $x = \frac{\pi}{6}$:}
+\begin{equation}
+F\left(\frac{\pi}{6}^+\right) = \frac{\sqrt{3}}{4} + k(1-1) = \frac{\sqrt{3}}{4} = F\left(\frac{\pi}{6}^-\right)
+\end{equation}
+
+\textbf{Проверка в точке $x = \pi$:}
+\begin{equation}
+F(\pi) = \frac{\sqrt{3}}{4} + k\left(1 - e^{-5\pi/6}\right) = \frac{\sqrt{3}}{4} + \frac{4-\sqrt{3}}{4} = 1
+\end{equation}
+
+\subsection*{Случай 4: $x \geq \pi$}
+
+\begin{equation}
+F(x) = 1
+\end{equation}
+
+\subsection*{Итоговая функция распределения}
+
+\begin{equation}
+F(x) = \begin{cases} 
+0, & x \leq -\dfrac{\pi}{6} \\[12pt]
+\dfrac{1}{2}\sin\left(x+\dfrac{\pi}{6}\right), & -\dfrac{\pi}{6} < x \leq \dfrac{\pi}{6} \\[15pt]
+\dfrac{\sqrt{3}}{4} + k\left(1-e^{-(x-\pi/6)}\right), & \dfrac{\pi}{6} < x < \pi \\[15pt]
+1, & x \geq \pi
+\end{cases}
+\end{equation}
+
+\section{Нахождение обратной функции $F^{-1}(y)$}
+
+\subsection*{Первая часть: $0 \leq y \leq \dfrac{\sqrt{3}}{4}$}
+
+Решаем уравнение:
+\begin{equation}
+y = \frac{1}{2}\sin\left(x+\frac{\pi}{6}\right)
+\end{equation}
+
+Умножаем на 2:
+\begin{equation}
+2y = \sin\left(x+\frac{\pi}{6}\right)
+\end{equation}
+
+Применяем $\arcsin$ (допустимо, так как $-\frac{\pi}{6} < x \leq \frac{\pi}{6} \Rightarrow 0 < x+\frac{\pi}{6} \leq \frac{\pi}{3}$, а на этом интервале $\sin$ монотонен):
+\begin{equation}
+\arcsin(2y) = x + \frac{\pi}{6}
+\end{equation}
+
+\begin{equation}
+F_1^{-1}(y) = \arcsin(2y) - \frac{\pi}{6}
+\end{equation}
+
+\textbf{Проверка границ:}
+\begin{itemize}
+    \item При $y = 0$: $F_1^{-1}(0) = \arcsin(0) - \frac{\pi}{6} = -\frac{\pi}{6}$
+    \item При $y = \frac{\sqrt{3}}{4}$: $F_1^{-1}\left(\frac{\sqrt{3}}{4}\right) = \arcsin\left(\frac{\sqrt{3}}{2}\right) - \frac{\pi}{6} = \frac{\pi}{3} - \frac{\pi}{6} = \frac{\pi}{6}$
+\end{itemize}
+
+\subsection*{Вторая часть: $\dfrac{\sqrt{3}}{4} < y < 1$}
+
+Решаем уравнение:
+\begin{equation}
+y = \frac{\sqrt{3}}{4} + k\left(1-e^{-(x-\pi/6)}\right)
+\end{equation}
+
+Вычитаем $\frac{\sqrt{3}}{4}$:
+\begin{equation}
+y - \frac{\sqrt{3}}{4} = k\left(1-e^{-(x-\pi/6)}\right)
+\end{equation}
+
+Делим на $k$:
+\begin{equation}
+\frac{y - \frac{\sqrt{3}}{4}}{k} = 1 - e^{-(x-\pi/6)}
+\end{equation}
+
+Выражаем экспоненту:
+\begin{equation}
+e^{-(x-\pi/6)} = 1 - \frac{y - \frac{\sqrt{3}}{4}}{k} = \frac{k - y + \frac{\sqrt{3}}{4}}{k} = \frac{k + \frac{\sqrt{3}}{4} - y}{k}
+\end{equation}
+
+Берём натуральный логарифм:
+\begin{equation}
+-(x-\frac{\pi}{6}) = \ln\left(\frac{k + \frac{\sqrt{3}}{4} - y}{k}\right)
+\end{equation}
+
+\begin{equation}
+x - \frac{\pi}{6} = -\ln\left(\frac{k + \frac{\sqrt{3}}{4} - y}{k}\right) = \ln\left(\frac{k}{k + \frac{\sqrt{3}}{4} - y}\right)
+\end{equation}
+
+\begin{equation}
+F_2^{-1}(y) = \frac{\pi}{6} + \ln\left(\frac{k}{k + \frac{\sqrt{3}}{4} - y}\right)
+\end{equation}
+
+\subsection*{Упрощение константы}
+
+Обозначим $C = k + \frac{\sqrt{3}}{4}$.
+
+Из условия нормировки:
+\begin{equation}
+k\left(1 - e^{-5\pi/6}\right) = 1 - \frac{\sqrt{3}}{4}
+\end{equation}
+
+\begin{equation}
+k - ke^{-5\pi/6} = 1 - \frac{\sqrt{3}}{4}
+\end{equation}
+
+\begin{equation}
+k + \frac{\sqrt{3}}{4} = 1 + ke^{-5\pi/6}
+\end{equation}
+
+\begin{equation}
+C = 1 + ke^{-5\pi/6} \approx 1 + 0.611603 \cdot 0.072949 \approx 1.044616
+\end{equation}
+
+Тогда:
+\begin{equation}
+F_2^{-1}(y) = \frac{\pi}{6} + \ln\left(\frac{k}{C - y}\right) = \frac{\pi}{6} + \ln k - \ln(C-y)
+\end{equation}
+
+\subsection*{Проверка границ второй части}
+
+\textbf{Нижняя граница} ($y \to \frac{\sqrt{3}}{4}^+$):
+\begin{equation}
+F_2^{-1}\left(\frac{\sqrt{3}}{4}\right) = \frac{\pi}{6} + \ln\left(\frac{k}{k + \frac{\sqrt{3}}{4} - \frac{\sqrt{3}}{4}}\right) = \frac{\pi}{6} + \ln\left(\frac{k}{k}\right) = \frac{\pi}{6} + 0 = \frac{\pi}{6}
+\end{equation}
+
+Совпадает с $F_1^{-1}\left(\frac{\sqrt{3}}{4}\right)$
+
+\textbf{Верхняя граница} ($y \to 1^-$):
+\begin{equation}
+F_2^{-1}(1) = \frac{\pi}{6} + \ln\left(\frac{k}{k + \frac{\sqrt{3}}{4} - 1}\right) = \frac{\pi}{6} + \ln\left(\frac{k}{ke^{-5\pi/6}}\right)
+\end{equation}
+
+\begin{equation}
+= \frac{\pi}{6} + \ln\left(e^{5\pi/6}\right) = \frac{\pi}{6} + \frac{5\pi}{6} = \pi
+\end{equation}
+
+Совпадает с $F(\pi) = 1$
+
+\subsection*{Итоговая обратная функция}
+
+\begin{equation}
+F^{-1}(y) = \begin{cases} 
+\arcsin(2y) - \dfrac{\pi}{6}, & 0 \leq y \leq \dfrac{\sqrt{3}}{4} \\[15pt]
+\dfrac{\pi}{6} + \ln\left(\dfrac{k}{k + \frac{\sqrt{3}}{4} - y}\right), & \dfrac{\sqrt{3}}{4} < y < 1
+\end{cases}
+\end{equation}
+
+где $k = \dfrac{4-\sqrt{3}}{4\left(1 - e^{-5\pi/6}\right)} \approx 0.611603$.
+
+\newpage
+
+\section{Графики функций}
+
+На рисунке \ref{fig:probability} представлены графики функций плотности вероятности $f(x)$, функции распределения $F(x)$ и гистограмма выборки размером $n = 10\,00000$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{probability_analysis2.png}
+    \caption{Функции плотности вероятности $f(x)$, распределения $F(x)$ и гистограмма выборки}
+    \label{fig:probability}
+\end{figure}
+
+На рисунке \ref{fig:generator} показана теоретическая плотность распределения с наложенными сгенерированными случайными точками, что наглядно демонстрирует корректность работы разработанного генератора случайных чисел.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{generator_verification.png}
+    \caption{Теоретическая плотность и сгенерированные случайные точки}
+    \label{fig:generator}
+\end{figure}
+
+\newpage
+
+\section{Вывод}
+
+В ходе выполнения работы был разработан генератор случайных чисел для заданной кусочно-заданной функции плотности вероятности. Найдена константа нормировки $k \approx 0.611603$, построена функция распределения $F(x)$ и получена обратная функция $F^{-1}(y)$, которая используется для генерации случайных чисел методом обратных функций.
+
+\newpage
+
+\section{Листинг программы}
+
+Листинг программы для численного моделирования распределения и построения графиков:
+
+\begin{lstlisting}[caption={Программа генерации выборки и построения графиков},label=lst:code]
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import quad
+
+PI = np.pi
+K = 0.611603
+Y_CRIT = 0.433013
+C_CONST = 1.044616
+BREAK_POINT = PI/6
+
+def f_theory(x):
+    res = np.zeros_like(x)
+    m1 = (x > -PI/6) & (x <= PI/6)
+    m2 = (x > PI/6) & (x < PI)
+    res[m1] = 0.5 * np.cos(x[m1] + PI/6)
+    res[m2] = K * np.exp(-(x[m2] - PI/6))
+    return res
+
+def F_theory(x):
+    res = np.zeros_like(x)
+    m1 = (x > -PI/6) & (x <= PI/6)
+    m2 = (x > PI/6) & (x < PI)
+    res[m1] = 0.5 * np.sin(x[m1] + PI/6)
+    res[m2] = Y_CRIT + K * (1 - np.exp(-(x[m2] - PI/6)))
+    res[x >= PI] = 1.0
+    return res
+
+def F_inverse(y):
+    res = np.zeros_like(y)
+    m1 = (y >= 0) & (y <= Y_CRIT)
+    m2 = (y > Y_CRIT) & (y < 1)
+    res[m1] = np.arcsin(2 * y[m1]) - PI/6
+    res[m2] = PI/6 - np.log((C_CONST - y[m2]) / K)
+    res[y >= 1] = PI
+    return res
+
+np.random.seed(42)
+N = 1000000
+sample = F_inverse(np.random.uniform(0, 1, N))
+
+x_plot = np.linspace(-PI/6 - 0.3, PI + 0.3, 1000)
+
+fig1, axes = plt.subplots(3, 1, figsize=(12, 14))
+
+axes[0].plot(x_plot, f_theory(x_plot), 'b-', lw=3, label='Теоретическая $f(x)$')
+axes[0].axvline(-PI/6, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
+axes[0].axvline(BREAK_POINT, color='red', linestyle='--', alpha=0.7, linewidth=2, label=f'Разрыв при $x = \\pi/6$')
+axes[0].axvline(PI, color='green', linestyle='--', alpha=0.5, linewidth=1.5)
+axes[0].set_title('Теоретическая плотность вероятности $f(x)$', fontsize=14, fontweight='bold')
+axes[0].set_xlabel('$x$', fontsize=12)
+axes[0].set_ylabel('$f(x)$', fontsize=12)
+axes[0].grid(alpha=0.3, linestyle=':')
+axes[0].legend(fontsize=11)
+axes[0].set_xlim(-PI/3, 1.2*PI)
+axes[0].set_ylim(0, max(f_theory(x_plot)) * 1.1)
+
+axes[1].plot(x_plot, F_theory(x_plot), 'r-', lw=3, label='Теоретическая $F(x)$')
+axes[1].axhline(Y_CRIT, color='orange', linestyle='--', alpha=0.6, linewidth=1.5, label=f'$Y_{{crit}} = \\sqrt{{3}}/4 \\approx {Y_CRIT:.3f}$')
+axes[1].axvline(BREAK_POINT, color='red', linestyle='--', alpha=0.5, linewidth=1.5)
+axes[1].axvline(PI, color='green', linestyle='--', alpha=0.5, linewidth=1.5)
+axes[1].set_title('Функция распределения $F(x)$', fontsize=14, fontweight='bold')
+axes[1].set_xlabel('$x$', fontsize=12)
+axes[1].set_ylabel('$F(x)$', fontsize=12)
+axes[1].grid(alpha=0.3, linestyle=':')
+axes[1].legend(fontsize=11)
+axes[1].set_xlim(-PI/3, 1.2*PI)
+axes[1].set_ylim(-0.05, 1.05)
+
+bins_left = np.linspace(-PI/6, BREAK_POINT, 25)
+bins_right = np.linspace(BREAK_POINT, PI, 40)
+bins = np.concatenate([bins_left[:-1], bins_right])
+
+axes[2].hist(sample, bins=bins, density=True, alpha=0.65, color='skyblue', edgecolor='black', linewidth=0.8, label='Гистограмма выборки')
+axes[2].plot(x_plot, f_theory(x_plot), 'b-', lw=3, label='Теоретическая $f(x)$')
+axes[2].axvline(BREAK_POINT, color='red', linestyle='--', alpha=0.7, linewidth=2, label=f'Разрыв при $x = \\pi/6$')
+axes[2].axvline(PI, color='green', linestyle='--', alpha=0.5, linewidth=1.5)
+axes[2].set_title('Гистограмма выборки и теоретическая плотность вероятности', fontsize=14, fontweight='bold')
+axes[2].set_xlabel('$x$', fontsize=12)
+axes[2].set_ylabel('Плотность', fontsize=12)
+axes[2].grid(alpha=0.3, linestyle=':')
+axes[2].legend(fontsize=11)
+axes[2].set_xlim(-PI/3, 1.2*PI)
+axes[2].set_ylim(0, max(f_theory(x_plot)) * 1.1)
+
+plt.tight_layout()
+plt.savefig('probability_analysis2.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig2, ax = plt.subplots(figsize=(14, 7))
+
+x_dense = np.linspace(-PI/6, PI, 1000)
+ax.plot(x_dense, f_theory(x_dense), 'b-', linewidth=3.5, label='Теоретическая плотность $f(x)$', zorder=10)
+
+subset_size = 5000
+subset_indices = np.random.choice(len(sample), subset_size, replace=False)
+subset_x = sample[subset_indices]
+subset_y = np.random.uniform(0, 1, subset_size) * f_theory(subset_x)
+
+ax.scatter(subset_x, subset_y, c='red', alpha=0.3, s=15, edgecolors='none', label='Сгенерированные точки', zorder=5)
+
+x_margin = (PI - (-PI/6)) * 0.08
+ax.set_xlim(-PI/6 - x_margin, PI + x_margin)
+ax.set_ylim(0, max(f_theory(x_dense)) * 1.2)
+
+ax.axvline(-PI/6, color='gray', linestyle='--', alpha=0.5, linewidth=1.5, label='Границы распределения')
+ax.axvline(PI, color='gray', linestyle='--', alpha=0.5, linewidth=1.5)
+ax.axvline(BREAK_POINT, color='red', linestyle='--', alpha=0.6, linewidth=2)
+
+ax.set_title('Теоретическая плотность и сгенерированные точки', fontsize=14, fontweight='bold')
+ax.set_xlabel('$x$', fontsize=12)
+ax.set_ylabel('Плотность', fontsize=12)
+ax.grid(alpha=0.3, linestyle=':')
+ax.legend(fontsize=11, loc='upper right')
+
+plt.tight_layout()
+plt.savefig('generator_verification.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+integral1, _ = quad(lambda x: 0.5 * np.cos(x + PI/6), -PI/6, PI/6)
+integral2, _ = quad(lambda x: K * np.exp(-(x - PI/6)), PI/6, PI)
+total = integral1 + integral2
+
+print(f"Выборка: N={N}, Диапазон=[{sample.min():.4f}, {sample.max():.4f}]")
+print(f"Нормировка: {total:.8f} (отклонение: {abs(total-1):.2e})")
+\end{lstlisting}
+
+\end{document}

@@ -1,0 +1,557 @@
+\documentclass[a4paper,12pt]{extreport}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{amsmath}
+
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    breaklines=true,
+    breakatwhitespace=true,
+    showspaces=false,
+    showstringspaces=false,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{gray!5},
+    captionpos=b,
+    tabsize=4,
+    language=Python
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1cm}
+    
+    {\large\textbf{ФЕДЕРАЛЬНОЕ ГОСУДАРСТВЕННОЕ БЮДЖЕТНОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ}}\\[5pt]
+    {\large\textbf{«СИБИРСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ}}\\
+    {\large\textbf{ТЕЛЕКОММУНИКАЦИЙ И ИНФОРМАТИКИ»}}\\[2.5cm]
+    
+    {\Large\textbf{ОТЧЕТ}}\\[1cm]
+    {\Large по дисциплине: «Моделирование»}\\[2cm]
+    
+    {\Large\textbf{Лабораторная работа №4}}\\[1cm]
+    {\Large\textbf{Выборки с возвращением, без возвращения и размещения}}\\[1cm]
+    
+    \vspace{1cm}
+    \vspace{1cm}
+
+    \begin{flushright}
+        \large
+        \textbf{Выполнил:}\\
+        Студент группы ИВ-221\\
+        Плешков Михаил Витальевич\\[1cm]
+        \textbf{Проверил:}\\
+        Ассистент\\
+        Уженцева Анастасия Владимировна\\[1cm]
+        
+    \end{flushright}
+    
+    \vfill
+    
+    {\large Новосибирск, 2026 г.}
+\end{titlepage}
+
+\section*{Цель работы}
+
+Целью данной лабораторной работы является изучение и программная реализация трех типов комбинаторных выборок:
+\begin{itemize}
+    \item выборка с возвращением;
+    \item выборка без возвращения;
+    \item размещение.
+\end{itemize}
+
+Также в данной работе для метода размещения рассматривается частный случай размещения - перестановка, когда из множества n элементов выбираются все элементы, то есть m=n. И
+необходимо провести множественные эксперименты для каждого типа выборки и собрать статистику частот выбора позиций.
+
+\section*{Программная реализация}
+
+Программа реализована на языке Python. Для каждого типа выборки создана отдельная функция, формирующая матрицу размером $m \times n$, где $m$ - количество элементов выборки, $n$ - количество позиций.
+
+\textbf{Выборка с возвращением.} Каждый из $m$ элементов независимо выбирает одну из $n$ позиций с помощью функции \texttt{random.randint(0, n-1)}. Одна и та же позиция может быть выбрана несколько раз.
+
+\textbf{Выборка без возвращения.} Элементы последовательно выбирают позиции из списка доступных \texttt{available}. После выбора позиция удаляется из списка, поэтому повторения невозможны.
+
+\textbf{Размещение.} Список позиций предварительно перемешивается функцией \texttt{random.shuffle()}, затем первые $m$ позиций назначаются элементам. Порядок фиксирован, повторения исключены.
+
+\subsection*{Расчёт теоретического ожидания}
+
+Поскольку выбор позиции происходит равномерно из $n = 10$ вариантов, теоретическая вероятность выбора любой позиции:
+\begin{equation}
+    P = \frac{1}{n} = \frac{1}{10} = 10\%
+\end{equation}
+
+Общее количество выборов для выборки с возвращением и без:
+\begin{equation}
+    \text{Total} = m \times \text{NUM\_RUNS} = 5 \times 1000 = 5000
+\end{equation}
+
+Теоретически ожидаемая частота:
+\begin{equation}
+    E = \frac{\text{Total}}{n} = \frac{5000}{10} = 500 \quad \text{(или 10\%)}
+\end{equation}
+
+Общее количество выборов для размещения:
+\begin{equation}
+    \text{Total} = m \times \text{NUM\_RUNS} = 10 \times 1000 = 10000
+\end{equation}
+
+Теоретически ожидаемая частота:
+\begin{equation}
+    E = \frac{\text{Total}}{n} = \frac{10000}{10} = 1000 \quad \text{(или 10\%)}
+\end{equation}
+
+Именно с этим значением сравниваются экспериментальные результаты.
+
+\section*{Результаты работы}
+
+Параметры эксперимента:
+\begin{itemize}
+    \item $m = 5$ - количество элементов выборки(Для размещения m=n);
+    \item $n = 10$ - количество позиций;
+    \item \texttt{NUM\_RUNS} = 1000 - количество итераций.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\label{fig:out_with}
+\footnotesize
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize, breaklines=true]
+With_replacement
+
+Source array:
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+Unique values: 10
+
+Run 1:
+Sample (positions): [2, 1, 5, 4, 4]
+Unique positions: 4 of 5
+Sample (values): [2, 1, 5, 4, 4]
+Matrix:
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+
+Run 2:
+Sample (positions): [3, 2, 9, 2, 10]
+Unique positions: 4 of 5
+Sample (values): [3, 2, 9, 2, 10]
+Matrix:
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+
+Run 3:
+Sample (positions): [7, 1, 1, 2, 4]
+Unique positions: 4 of 5
+Sample (values): [7, 1, 1, 2, 4]
+Matrix:
+[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+
+Accumulated matrix (1000 runs):
+[92, 105, 108, 107, 109, 100, 110, 104, 85, 80]
+[100, 90, 116, 82, 93, 109, 101, 91, 102, 116]
+[89, 114, 106, 98, 94, 95, 90, 104, 107, 103]
+[104, 104, 89, 94, 103, 84, 105, 107, 108, 102]
+[77, 110, 82, 103, 96, 113, 101, 103, 110, 105]
+\end{lstlisting}
+\caption{Вывод программы: выборка с возвращением ($m=5$, $n=10$)}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\label{fig:out_with}
+\footnotesize
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize, breaklines=true]
+Without_replacement
+Run 1:
+Sample (positions): [2, 4, 9, 8, 7]
+Unique positions: 5 of 5
+Sample (values): [2, 4, 9, 8, 7]
+Matrix:
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+
+Run 2:
+Sample (positions): [5, 6, 9, 7, 3]
+Unique positions: 5 of 5
+Sample (values): [5, 6, 9, 7, 3]
+Matrix:
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+
+Run 3:
+Sample (positions): [10, 5, 8, 9, 2]
+Unique positions: 5 of 5
+Sample (values): [10, 5, 8, 9, 2]
+Matrix:
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+
+Accumulated matrix (1000 runs):
+[96, 93, 107, 94, 104, 101, 99, 106, 90, 110]
+[103, 120, 96, 100, 94, 91, 93, 85, 118, 100]
+[97, 95, 95, 100, 99, 102, 101, 99, 115, 97]
+[100, 112, 103, 85, 107, 107, 109, 85, 95, 97]
+[81, 101, 97, 104, 99, 102, 88, 117, 105, 106]
+\end{lstlisting}
+\caption{Вывод программы: выборка без возвращения ($m=5$, $n=10$)}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\label{fig:out_with}
+\footnotesize
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize, breaklines=true]
+Arrangement
+Run 1:
+Sample (positions): [10, 2, 3, 5, 8, 7, 4, 6, 9, 1]
+Unique positions: 10 of 10
+Sample (values): [10, 2, 3, 5, 8, 7, 4, 6, 9, 1]
+Matrix:
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+Run 2:
+Sample (positions): [2, 3, 10, 4, 1, 9, 6, 5, 8, 7]
+Unique positions: 10 of 10
+Sample (values): [2, 3, 10, 4, 1, 9, 6, 5, 8, 7]
+Matrix:
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+
+Run 3:
+Sample (positions): [1, 2, 6, 5, 9, 8, 10, 4, 3, 7]
+Unique positions: 10 of 10
+Sample (values): [1, 2, 6, 5, 9, 8, 10, 4, 3, 7]
+Matrix:
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+
+Accumulated matrix (1000 runs):
+[104, 88, 104, 82, 104, 88, 111, 92, 116, 111]
+[88, 119, 96, 101, 100, 97, 107, 119, 87, 86]
+[97, 97, 87, 97, 108, 117, 98, 86, 105, 108]
+[117, 93, 110, 89, 114, 92, 99, 104, 95, 87]
+[96, 95, 111, 107, 95, 107, 83, 92, 113, 101]
+[94, 88, 88, 122, 97, 103, 98, 119, 83, 108]
+[104, 102, 85, 105, 105, 96, 84, 104, 106, 109]
+[96, 99, 109, 112, 94, 83, 112, 92, 104, 99]
+[107, 118, 99, 87, 90, 116, 101, 99, 97, 86]
+[97, 101, 111, 98, 93, 101, 107, 93, 94, 105]
+
+\end{lstlisting}
+\caption{Вывод программы: Размещение ($m=10$, $n=10$)}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\label{fig:out_with}
+\footnotesize
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize, breaklines=true]
+Statistics:
+
+With_replacement:
+Pos 1: 462 (9.24%) | Expected: 500.0 (10.0%)
+Pos 2: 523 (10.46%) | Expected: 500.0 (10.0%)
+Pos 3: 501 (10.02%) | Expected: 500.0 (10.0%)
+Pos 4: 484 (9.68%) | Expected: 500.0 (10.0%)
+Pos 5: 495 (9.90%) | Expected: 500.0 (10.0%)
+Pos 6: 501 (10.02%) | Expected: 500.0 (10.0%)
+Pos 7: 507 (10.14%) | Expected: 500.0 (10.0%)
+Pos 8: 509 (10.18%) | Expected: 500.0 (10.0%)
+Pos 9: 512 (10.24%) | Expected: 500.0 (10.0%)
+Pos 10: 506 (10.12%) | Expected: 500.0 (10.0%)
+
+Without_replacement:
+Pos 1: 477 (9.54%) | Expected: 500.0 (10.0%)
+Pos 2: 521 (10.42%) | Expected: 500.0 (10.0%)
+Pos 3: 498 (9.96%) | Expected: 500.0 (10.0%)
+Pos 4: 483 (9.66%) | Expected: 500.0 (10.0%)
+Pos 5: 503 (10.06%) | Expected: 500.0 (10.0%)
+Pos 6: 503 (10.06%) | Expected: 500.0 (10.0%)
+Pos 7: 490 (9.80%) | Expected: 500.0 (10.0%)
+Pos 8: 492 (9.84%) | Expected: 500.0 (10.0%)
+Pos 9: 523 (10.46%) | Expected: 500.0 (10.0%)
+Pos 10: 510 (10.20%) | Expected: 500.0 (10.0%)
+
+Arrangement:
+Pos 1: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 2: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 3: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 4: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 5: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 6: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 7: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 8: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 9: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+Pos 10: 1000 (10.00%) | Expected: 1000.0 (10.0%)
+
+Summary table:
+Pos     With rep        Without rep     Arrangement
+1       462(9.2%)       477(9.5%)       1000(10.0%)
+2       523(10.5%)      521(10.4%)      1000(10.0%)
+3       501(10.0%)      498(10.0%)      1000(10.0%)
+4       484(9.7%)       483(9.7%)       1000(10.0%)
+5       495(9.9%)       503(10.1%)      1000(10.0%)
+6       501(10.0%)      503(10.1%)      1000(10.0%)
+7       507(10.1%)      490(9.8%)       1000(10.0%)
+8       509(10.2%)      492(9.8%)       1000(10.0%)
+9       512(10.2%)      523(10.5%)      1000(10.0%)
+10      506(10.1%)      510(10.2%)      1000(10.0%)
+\end{lstlisting}
+\caption{Вывод программы: Статистика}
+\end{figure}
+
+\subsection*{Графическое представление результатов}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{hist_with.png}
+\caption{Гистограмма: выборка с возвращением}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{hist_without.png}
+\caption{Гистограмма: выборка без возвращения}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{hist_arr.png}
+\caption{Гистограмма: размещение}
+\end{figure}
+
+\section*{Вывод}
+
+В ходе выполнения лабораторной работы были программно реализованы три типа комби-
+наторных выборок: с возвращением, без возвращения и размещение.
+Для каждого метода реализована функция формирования матрицы размером m ×n,
+где единица обозначает выбор соответствующей позиции. Проведено 1000 экспериментов
+для сбора статистики частот выбора позиций.
+Программа корректно генерирует выборки согласно заданным правилам. Гистограммы
+наглядно демонстрируют распределение частот выбора позиций для каждого метода.
+Особый интерес представляет случай размещения при $m = n$: поскольку 
+алгоритм гарантирует выбор всех $n$ позиций ровно по одному разу за 
+эксперимент, итоговая частота для каждой позиции составляет точно 
+$1000/10000 = 10\%$. Это подтверждает корректность реализации и 
+соответствие комбинаторной теории.
+
+\clearpage
+
+\appendix
+\section*{Приложение. Код программы}
+
+\begin{lstlisting}[caption={main.py}]
+import random
+import matplotlib.pyplot as plt
+
+M = 5
+N = 10
+NUM_RUNS = 1000
+
+def sampling_with_replacement(m, n):
+    matrix = [[0] * n for _ in range(m)]
+    positions = []
+    for i in range(m):
+        pos = random.randint(0, n - 1)
+        matrix[i][pos] = 1
+        positions.append(pos + 1)
+    return matrix, positions
+
+def sampling_without_replacement(m, n):
+    if m > n:
+        m = n
+    matrix = [[0] * n for _ in range(m)]
+    available = list(range(n))
+    positions = []
+    for i in range(m):
+        pos = random.choice(available)
+        matrix[i][pos] = 1
+        available.remove(pos)
+        positions.append(pos + 1)
+    return matrix, positions
+
+def arrangement(m, n):
+    if m > n:
+        m = n
+    matrix = [[0] * n for _ in range(m)]
+    available = list(range(n))
+    random.shuffle(available)
+    positions = []
+    for i in range(m):
+        pos = available[i]
+        matrix[i][pos] = 1
+        positions.append(pos + 1)
+    return matrix, positions
+
+def run_experiments(m, n, num_runs, sampling_func, name):
+    position_counts = {i: 0 for i in range(n)}
+    accumulated = [[0] * n for _ in range(m)]
+    
+    print(f"\n{name}")
+    
+    if name == 'With_replacement':
+        print("\nSource array:")
+        source_array = list(range(1, n + 1))
+        print(source_array)
+        print(f"Unique values: {len(set(source_array))}\n")
+    
+    for run in range(num_runs):
+        matrix, positions = sampling_func(m, n)
+        
+        for pos in positions:
+            position_counts[pos - 1] += 1
+        
+        for i in range(m):
+            for j in range(n):
+                accumulated[i][j] += matrix[i][j]
+        
+        if run < 3:
+            print(f"Run {run + 1}:")
+            print(f"Sample (positions): {positions}")
+            print(f"Unique positions: {len(set(positions))} of {m}")
+            print(f"Sample (values): {positions}")
+            print("Matrix:")
+            for row in matrix:
+                print(row)
+            print()
+    
+    print("Accumulated matrix (1000 runs):")
+    for row in accumulated:
+        print(row)
+    print()
+    
+    return position_counts
+
+def plot_histogram(position_counts, m, n, num_runs, title, filename, color):
+    positions = list(range(1, n + 1))
+    frequencies = [position_counts[i] for i in range(n)]
+    percentages = [f / (m * num_runs) * 100 for f in frequencies]
+    theoretical_pct = 100 / n
+    
+    plt.figure(figsize=(8, 4))
+    plt.bar(positions, percentages, color=color, alpha=0.7, label='Experimental')
+    plt.axhline(y=theoretical_pct, color='red', linestyle='--', linewidth=1.5, 
+                label=f'Theoretical ({theoretical_pct:.1f}%)')
+    plt.xlabel('Position')
+    plt.ylabel('Relative frequency, %')
+    plt.title(title)
+    plt.xticks(positions)
+    plt.legend()
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"{filename}")
+
+def main():
+    print(f"m={M}, n={N}, runs={NUM_RUNS}")
+    
+    results = {}
+    results['With_replacement'] = run_experiments(M, N, NUM_RUNS, sampling_with_replacement, 'With_replacement')
+    results['Without_replacement'] = run_experiments(M, N, NUM_RUNS, sampling_without_replacement, 'Without_replacement')
+    results['Arrangement'] = run_experiments(N, N, NUM_RUNS, arrangement, 'Arrangement')
+    
+    print("\nStatistics:")
+
+    for name, counts in results.items():
+
+        if name == "Arrangement":
+            m_used = N
+        else:
+            m_used = M
+
+        total = m_used * NUM_RUNS
+        expected_freq = total / N
+        expected_pct = 100 / N
+
+        print(f"\n{name}:")
+        for pos in range(N):
+            freq = counts[pos]
+            pct = freq / total * 100
+            print(f"Pos {pos+1}: {freq} ({pct:.2f}%) | Expected: {expected_freq:.1f} ({expected_pct:.1f}%)")
+    
+    print("\nSummary table:")
+    print("Pos\tWith rep\tWithout rep\tArrangement")
+    for pos in range(N):
+        print(f"{pos+1}", end="\t")
+        for name in results:
+            cnt = results[name][pos]
+            if name == "Arrangement":
+                total = N * NUM_RUNS
+            else:
+                total = M * NUM_RUNS
+
+            pct = cnt / total * 100
+            print(f"{cnt}({pct:.1f}%)", end="\t")
+        print()
+    
+    print("\nGenerating plots...")
+    plot_histogram(results['With_replacement'], M, N, NUM_RUNS, 'With_replacement', 'hist_with.png', 'skyblue')
+    plot_histogram(results['Without_replacement'], M, N, NUM_RUNS, 'Without_replacement', 'hist_without.png', 'lightgreen')
+    plot_histogram(results['Arrangement'], N, N, NUM_RUNS, 'Arrangement', 'hist_arr.png', 'plum')
+
+if __name__ == "__main__":
+    random.seed(42)
+    main()
+\end{lstlisting}
+
+\end{document}

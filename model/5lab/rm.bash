@@ -1,0 +1,1 @@
+rm main.aux main.log main.toc
